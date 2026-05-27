@@ -39,3 +39,20 @@
 2. 重建对局主循环
 3. 接回后端登录/分数/奖励接口
 4. 再做抖音小游戏导出包装
+
+## 当前第一批骨架
+
+已新增：
+
+- `scenes/home_screen.tscn`
+- `scenes/game_screen.tscn`
+- `scenes/ui/revive_dialog.tscn`
+- `scenes/ui/result_dialog.tscn`
+- `scripts/home_screen.gd`
+- `scripts/game_screen.gd`
+- `scripts/ui/revive_dialog.gd`
+- `scripts/ui/result_dialog.gd`
+- `scripts/world/player.gd`
+- `scripts/world/spawn_manager.gd`
+- `scripts/world/collision_manager.gd`
+- `scripts/world/progression_manager.gd`
