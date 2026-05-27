@@ -8,6 +8,30 @@ function validateConfig() {
   };
 }
 
+function getStorage(key) {
+  try {
+    return tt.getStorageSync(key);
+  } catch (error) {
+    return "";
+  }
+}
+
+function setStorage(key, value) {
+  try {
+    tt.setStorageSync(key, value);
+  } catch (error) {
+    // ignore
+  }
+}
+
+function removeStorage(key) {
+  try {
+    tt.removeStorageSync(key);
+  } catch (error) {
+    // ignore
+  }
+}
+
 function login() {
   return new Promise((resolve, reject) => {
     tt.login({
@@ -64,9 +88,23 @@ function createRewardedAd() {
   }
 }
 
+function showToast(title) {
+  if (tt.showToast) {
+    tt.showToast({
+      title,
+      icon: "none",
+      duration: 1400,
+    });
+  }
+}
+
 module.exports = {
   validateConfig,
+  getStorage,
+  setStorage,
+  removeStorage,
   login,
   request,
   createRewardedAd,
+  showToast,
 };

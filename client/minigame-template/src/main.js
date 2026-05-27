@@ -5,6 +5,10 @@ const systemInfo = tt.getSystemInfoSync();
 const canvas = tt.createCanvas();
 const ctx = canvas.getContext("2d");
 const configStatus = platform.validateConfig();
+const STORAGE_KEYS = {
+  token: "dymini_native_token",
+  audioEnabled: "dymini_native_audio_enabled",
+};
 
 canvas.width = systemInfo.windowWidth;
 canvas.height = systemInfo.windowHeight;
@@ -13,6 +17,7 @@ const state = {
   token: "",
   bestScore: 0,
   coin: 0,
+  nickname: "玩家",
   runtimeLabel: "抖音小游戏",
   configWarning: "",
   screen: "loading",
@@ -27,6 +32,7 @@ const state = {
   startTime: 0,
   lastFrame: 0,
   touchActive: false,
+  audioEnabled: platform.getStorage(STORAGE_KEYS.audioEnabled) !== false,
 };
 
 boot().catch((error) => {
@@ -75,6 +81,18 @@ function bindTouches() {
 }
 
 function handleTap(x, y) {
+  if (state.screen === "home" && hitButton(x, y, canvas.width - 122, 44, 82, 30)) {
+    state.audioEnabled = !state.audioEnabled;
+    platform.setStorage(STORAGE_KEYS.audioEnabled, state.audioEnabled);
+    platform
+      .request("/user/archive", "POST", state.token, {
+        audio_enabled: state.audioEnabled,
+      })
+      .catch(() => {});
+    render();
+    return;
+  }
+
   if (state.screen === "home" && hitButton(x, y, 38, canvas.height - 156, canvas.width - 76, 58)) {
     startGame();
     return;
@@ -130,29 +148,52 @@ function updatePointer(clientX, clientY) {
 
 function loginAndLoad() {
   const anonymousId = `anon_${Date.now().toString(36).slice(-6)}`;
-  return platform
-    .login()
-    .then((code) =>
-      platform.request("/login", "POST", "", {
-        code,
-        anonymous_id: anonymousId,
-      }),
-    )
-    .then((loginData) => {
-      state.token = loginData.token;
-      return Promise.all([
-        platform.request("/user/profile", "GET", state.token),
-        platform.request("/user/archive", "GET", state.token),
-      ]);
-    })
-    .then(([profile, archive]) => {
-      state.bestScore = archive.best_score;
-      state.coin = archive.coin;
-      state.runtimeLabel = `抖音小游戏 · ${profile.nickname}`;
-      if (state.configWarning) {
-        showToast(state.configWarning);
-      }
-    });
+  const cachedToken = platform.getStorage(STORAGE_KEYS.token);
+
+  const loadProfileAndArchive = (token) =>
+    Promise.all([
+      platform.request("/user/profile", "GET", token),
+      platform.request("/user/archive", "GET", token),
+    ]);
+
+  const loginFresh = () =>
+    platform
+      .login()
+      .then((code) =>
+        platform.request("/login", "POST", "", {
+          code,
+          anonymous_id: anonymousId,
+        }),
+      )
+      .then((loginData) => {
+        state.token = loginData.token;
+        platform.setStorage(STORAGE_KEYS.token, loginData.token);
+        return loadProfileAndArchive(state.token);
+      });
+
+  const chain = cachedToken
+    ? loadProfileAndArchive(cachedToken)
+        .then((result) => {
+          state.token = cachedToken;
+          return result;
+        })
+        .catch(() => {
+          platform.removeStorage(STORAGE_KEYS.token);
+          return loginFresh();
+        })
+    : loginFresh();
+
+  return chain.then(([profile, archive]) => {
+    state.bestScore = archive.best_score;
+    state.coin = archive.coin;
+    state.nickname = profile.nickname;
+    state.audioEnabled = archive.audio_enabled;
+    platform.setStorage(STORAGE_KEYS.audioEnabled, archive.audio_enabled);
+    state.runtimeLabel = `抖音小游戏 · ${profile.nickname}`;
+    if (state.configWarning) {
+      showToast(state.configWarning);
+    }
+  });
 }
 
 function startGame() {
@@ -169,6 +210,9 @@ function startGame() {
   state.startTime = Date.now();
   state.lastFrame = Date.now();
   state.screen = "playing";
+  reportEvent("game_start", {
+    entry: "home",
+  });
 }
 
 function revivePlayer() {
@@ -278,6 +322,9 @@ function tryUpgrade() {
     player.level = next.level;
     player.radius = next.radius;
     player.maxStage = Math.max(player.maxStage, next.level);
+    reportEvent("stage_upgrade", {
+      stage: next.level,
+    });
   }
 }
 
@@ -306,6 +353,11 @@ function finishGame() {
   };
   state.pendingResult = result;
   state.screen = "gameover";
+  reportEvent("game_over", {
+    score: result.score,
+    survival_seconds: result.survivalSeconds,
+    max_stage: result.maxStage,
+  });
 
   platform
     .request("/score/submit", "POST", state.token, {
@@ -329,14 +381,23 @@ function finishGame() {
 }
 
 function claimRevive() {
-  return platform.request("/ad/reward", "POST", state.token, {
-    reward_type: "revive",
-    unique_token: `revive_${Date.now()}`,
-    extra: {},
-  });
+  reportEvent("revive_click", {});
+  return platform
+    .request("/ad/reward", "POST", state.token, {
+      reward_type: "revive",
+      unique_token: `revive_${Date.now()}`,
+      extra: {},
+    })
+    .then((response) => {
+      reportEvent("revive_success", {});
+      return response;
+    });
 }
 
 function claimDoubleReward() {
+  reportEvent("double_reward_click", {
+    coin_reward: state.latestCoinReward,
+  });
   return platform
     .request("/ad/reward", "POST", state.token, {
       reward_type: "double_coin",
@@ -348,7 +409,28 @@ function claimDoubleReward() {
     .then((response) => {
       state.coin = response.coin;
       state.rewardDoubled = true;
+      reportEvent("double_reward_success", {
+        coin_reward: state.latestCoinReward,
+      });
     });
+}
+
+function reportEvent(eventName, payload) {
+  if (!state.token) {
+    return;
+  }
+
+  platform
+    .request("/event/report", "POST", state.token, {
+      events: [
+        {
+          event_name: eventName,
+          event_time: Date.now(),
+          payload,
+        },
+      ],
+    })
+    .catch(() => {});
 }
 
 function showRewardedAd(reason) {
@@ -428,6 +510,7 @@ function drawHome() {
 
   drawStatCard(42, 220, "最高分", String(state.bestScore));
   drawStatCard(42 + (canvas.width - 126) / 2, 220, "金币", String(state.coin));
+  drawButton(canvas.width - 122, 44, 82, 30, state.audioEnabled ? "音效开" : "音效关", false);
 
   drawButton(38, canvas.height - 156, canvas.width - 76, 58, "开始吞噬", true);
   ctx.fillStyle = "#8ecae6";
