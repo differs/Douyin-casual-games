@@ -10,3 +10,7 @@
 target/
 **/target/
 
+.godot/
+**/.godot/
+*.import
+exported/

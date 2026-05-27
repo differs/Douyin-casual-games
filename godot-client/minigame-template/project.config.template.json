@@ -1,0 +1,9 @@
+{
+  "projectname": "deep-sea-devour",
+  "appid": "your_microapp_appid",
+  "compileType": "game",
+  "setting": {
+    "es6": true,
+    "minified": true
+  }
+}
