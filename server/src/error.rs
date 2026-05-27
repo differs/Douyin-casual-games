@@ -10,6 +10,9 @@ pub enum AppError {
     InvalidToken,
     InvalidParams(&'static str),
     UserNotFound,
+    ScoreInvalid,
+    RewardAlreadyClaimed,
+    RewardLimitReached,
     ServiceUnavailable(&'static str),
     Internal(&'static str),
 }
@@ -44,6 +47,30 @@ impl IntoResponse for AppError {
                 Json(ErrorBody {
                     code: 1004,
                     message: "user_not_found".to_string(),
+                }),
+            )
+                .into_response(),
+            Self::ScoreInvalid => (
+                StatusCode::BAD_REQUEST,
+                Json(ErrorBody {
+                    code: 1005,
+                    message: "score_invalid".to_string(),
+                }),
+            )
+                .into_response(),
+            Self::RewardAlreadyClaimed => (
+                StatusCode::CONFLICT,
+                Json(ErrorBody {
+                    code: 1006,
+                    message: "reward_already_claimed".to_string(),
+                }),
+            )
+                .into_response(),
+            Self::RewardLimitReached => (
+                StatusCode::TOO_MANY_REQUESTS,
+                Json(ErrorBody {
+                    code: 1007,
+                    message: "reward_limit_reached".to_string(),
                 }),
             )
                 .into_response(),

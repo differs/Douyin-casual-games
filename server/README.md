@@ -31,6 +31,7 @@ Apply the current migration:
 
 ```bash
 psql postgres://postgres:postgres@127.0.0.1:5432/dy_mini -f migrations/0001_init_users_and_archives.sql
+psql postgres://postgres:postgres@127.0.0.1:5432/dy_mini -f migrations/0002_add_score_reward_and_event_tables.sql
 ```
 
 Then start the server:
@@ -47,4 +48,7 @@ POST /api/login
 GET  /api/user/profile
 GET  /api/user/archive
 POST /api/user/archive
+POST /api/score/submit
+POST /api/ad/reward
+POST /api/event/report
 ```
