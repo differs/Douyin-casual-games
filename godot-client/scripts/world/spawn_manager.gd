@@ -1,6 +1,6 @@
 extends Node
 
-const WORLD_SIZE := Vector2(720, 1280)
+const WORLD_SIZE := Vector2(1080, 1920)
 const FOOD_COUNT := 36
 const FISH_COUNT := 10
 const DANGER_COUNT := 4

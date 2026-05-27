@@ -29,3 +29,31 @@ func save_local_settings() -> void:
 func clear_session() -> void:
     token = ""
     save_local_settings()
+
+
+func profile_snapshot() -> Dictionary:
+    return {
+        "nickname": nickname,
+        "best_score": best_score,
+        "coin": coin,
+        "audio_enabled": audio_enabled,
+    }
+
+
+func apply_result(score: int, coin_reward: int) -> Dictionary:
+    best_score = max(best_score, score)
+    coin += coin_reward
+    save_local_settings()
+    return {
+        "best_score": best_score,
+        "coin": coin,
+        "coin_reward": coin_reward,
+    }
+
+
+func apply_double_reward(extra_coin: int) -> Dictionary:
+    coin += extra_coin
+    save_local_settings()
+    return {
+        "coin": coin,
+    }

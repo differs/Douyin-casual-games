@@ -28,7 +28,8 @@ func _wire_signals() -> void:
 
 
 func _refresh_home() -> void:
-    home_screen.refresh(Runtime.best_score, Runtime.coin, Runtime.audio_enabled)
+    var profile := ApiClient.load_home_profile()
+    home_screen.refresh(int(profile.get("best_score", 0)), int(profile.get("coin", 0)), bool(profile.get("audio_enabled", true)))
 
 
 func _show_home() -> void:
@@ -69,28 +70,26 @@ func _on_game_over_requested(result: Dictionary) -> void:
         return
 
     play_state = "gameover"
-    Runtime.best_score = max(Runtime.best_score, int(result.get("score", 0)))
-    Runtime.coin += int(result.get("coin_reward", 0))
-    Runtime.save_local_settings()
+    var submit_result := ApiClient.submit_result(result)
+    Runtime.best_score = int(submit_result.get("best_score", Runtime.best_score))
+    Runtime.coin = int(submit_result.get("coin", Runtime.coin))
     _refresh_home()
-    result_dialog.open(result)
+    result_dialog.open({
+        "score": result.get("score", 0),
+        "stage": result.get("stage", "鱼苗"),
+        "coin_reward": int(submit_result.get("coin_reward", result.get("coin_reward", 0))),
+    })
 
 
 func _on_revive_confirmed() -> void:
     play_state = "playing"
     revive_dialog.close()
-    game_screen.start_game()
+    game_screen.revive_game()
 
 
 func _on_revive_skipped() -> void:
     revive_dialog.close()
-    _on_game_over_requested(
-        pending_result if not pending_result.is_empty() else {
-            "score": 88,
-            "stage": "河豚",
-            "coin_reward": 8,
-        }
-    )
+    _on_game_over_requested(pending_result if not pending_result.is_empty() else game_screen.current_result())
 
 
 func _on_restart_requested() -> void:
@@ -101,8 +100,8 @@ func _on_restart_requested() -> void:
 func _on_double_reward_requested() -> void:
     if result_dialog.result_payload.is_empty():
         return
-    Runtime.coin += int(result_dialog.result_payload.get("coin_reward", 0))
-    Runtime.save_local_settings()
+    var reward_result := ApiClient.claim_double_reward(result_dialog.result_payload)
+    Runtime.coin = int(reward_result.get("coin", Runtime.coin))
     _refresh_home()
     result_dialog.open({
         "score": result_dialog.result_payload.get("score", 0),
