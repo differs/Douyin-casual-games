@@ -14,6 +14,23 @@ npm run dev
 npm run build
 ```
 
+## Native Mini Game Export
+
+Generate a native Douyin Mini Game prototype directory:
+
+```bash
+cp .env.example .env
+npm run build:minigame-native
+```
+
+Output:
+
+```text
+dist-minigame-native/
+```
+
+Open that directory in Douyin Mini Game DevTools.
+
 ## Current Scope
 
 - Home
@@ -34,4 +51,12 @@ Optional env:
 ```bash
 VITE_API_BASE=http://127.0.0.1:8080/api
 VITE_DOUYIN_REWARDED_AD_UNIT_ID=your_ad_unit_id
+VITE_DOUYIN_APP_ID=your_microapp_appid
 ```
+
+## Packaging Status
+
+- `dist-minigame/`: transitional shell with web build copy
+- `dist-minigame-native/`: native Douyin Mini Game prototype template
+
+Use `dist-minigame-native/` for the next validation step in DevTools.

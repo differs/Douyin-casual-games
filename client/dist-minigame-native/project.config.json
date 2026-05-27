@@ -1,0 +1,9 @@
+{
+  "projectname": "deep-sea-devour",
+  "appid": "touristappid",
+  "compileType": "game",
+  "setting": {
+    "es6": true,
+    "minified": true
+  }
+}
