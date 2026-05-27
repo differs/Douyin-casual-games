@@ -10,3 +10,64 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="SafeArea"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="SafeArea/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Eyebrow" type="Label" parent="SafeArea/Panel/VBox"]
+layout_mode = 2
+text = "抖音小游戏首版原型"
+
+[node name="Title" type="Label" parent="SafeArea/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "深海吞噬进化"
+
+[node name="Subtitle" type="Label" parent="SafeArea/Panel/VBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = "10 秒上手，20 秒进化，先跑通 Godot 闭环。"
+
+[node name="StatsRow" type="HBoxContainer" parent="SafeArea/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BestScoreLabel" type="Label" parent="SafeArea/Panel/VBox/StatsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "最高分: 0"
+
+[node name="CoinLabel" type="Label" parent="SafeArea/Panel/VBox/StatsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "金币: 0"
+
+[node name="StartButton" type="Button" parent="SafeArea/Panel/VBox"]
+layout_mode = 2
+text = "开始吞噬"
+
+[node name="AudioToggle" type="CheckButton" parent="SafeArea/Panel/VBox"]
+layout_mode = 2
+text = "音效开关"
+button_pressed = true
+
+[node name="RuntimeLabel" type="Label" parent="SafeArea/Panel/VBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Godot 迁移模式"
