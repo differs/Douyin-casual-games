@@ -3,6 +3,7 @@ use crate::{
     error::AppError,
     extractors::auth::build_token,
     repositories::{archive_repo, user_repo},
+    services::douyin_auth_service,
     state::AppState,
 };
 
@@ -17,7 +18,7 @@ pub async fn login(state: &AppState, payload: LoginRequest) -> Result<LoginRespo
         return Err(AppError::InvalidParams("code_required"));
     }
 
-    let platform_open_id = format!("mock_open_id:{code}");
+    let platform_open_id = douyin_auth_service::exchange_code(state, code).await?;
     let mut nickname = format!("玩家{}", code.chars().take(6).collect::<String>());
     if let Some(anonymous_id) = payload.anonymous_id.as_deref() {
         if !anonymous_id.trim().is_empty() {

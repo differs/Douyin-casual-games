@@ -27,6 +27,13 @@ Set `DATABASE_URL` in `.env`:
 DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/dy_mini
 ```
 
+Optional Douyin login config:
+
+```bash
+DOUYIN_APP_ID=your_microapp_appid
+DOUYIN_APP_SECRET=your_microapp_secret
+```
+
 Apply the current migration:
 
 ```bash
@@ -52,3 +59,8 @@ POST /api/score/submit
 POST /api/ad/reward
 POST /api/event/report
 ```
+
+## Login Behavior
+
+- Development fallback: codes beginning with `dev_` use mock openid mapping
+- Douyin Mini Game runtime: frontend uses `tt.login`, backend exchanges code through `code2session`

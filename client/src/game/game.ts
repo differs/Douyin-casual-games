@@ -177,7 +177,7 @@ export class DeepSeaGame {
       }
 
       if (enemy.level < this.player.level || enemy.radius + 3 < this.player.radius) {
-        this.player.exp += 22 + enemy.level * 8;
+        this.player.exp += 28 + enemy.level * 10;
         this.player.score += enemy.score;
         this.eatFishCount += 1;
         this.tryUpgrade();
@@ -337,21 +337,21 @@ function createFood(seed: number): Food {
     x: 30 + Math.random() * (WORLD_WIDTH - 60),
     y: 30 + Math.random() * (WORLD_HEIGHT - 60),
     radius: 5 + Math.random() * 4,
-    exp: 6 + Math.floor(Math.random() * 6),
-    score: 4 + Math.floor(Math.random() * 4),
+    exp: 8 + Math.floor(Math.random() * 7),
+    score: 5 + Math.floor(Math.random() * 5),
   };
 }
 
 function createFish(seed: number, dangerous: boolean): EnemyFish {
   const stage = dangerous
     ? STAGES[3 + Math.floor(Math.random() * 4)]
-    : STAGES[Math.floor(Math.random() * 5)];
+    : STAGES[Math.floor(Math.random() * 4)];
 
   return {
     id: `fish_${seed}`,
     x: 50 + Math.random() * (WORLD_WIDTH - 100),
     y: 50 + Math.random() * (WORLD_HEIGHT - 100),
-    radius: dangerous ? stage.radius + 4 : stage.radius - 3,
+    radius: dangerous ? stage.radius + 4 : stage.radius - 4,
     level: dangerous ? Math.min(stage.level + 1, 8) : stage.level,
     speed: 90 + Math.random() * (dangerous ? 70 : 40),
     angle: Math.random() * Math.PI * 2,

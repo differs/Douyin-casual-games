@@ -8,6 +8,9 @@ pub struct AppConfig {
     pub database_url: Option<String>,
     pub log_filter: String,
     pub token_prefix: String,
+    pub douyin_app_id: Option<String>,
+    pub douyin_app_secret: Option<String>,
+    pub douyin_code2session_url: String,
 }
 
 impl AppConfig {
@@ -24,6 +27,15 @@ impl AppConfig {
         let log_filter =
             env::var("RUST_LOG").unwrap_or_else(|_| "server=debug,tower_http=info".to_string());
         let token_prefix = env::var("TOKEN_PREFIX").unwrap_or_else(|_| "dymini".to_string());
+        let douyin_app_id = env::var("DOUYIN_APP_ID")
+            .ok()
+            .filter(|value| !value.is_empty());
+        let douyin_app_secret = env::var("DOUYIN_APP_SECRET")
+            .ok()
+            .filter(|value| !value.is_empty());
+        let douyin_code2session_url = env::var("DOUYIN_CODE2SESSION_URL").unwrap_or_else(|_| {
+            "https://developer.toutiao.com/api/apps/v2/jscode2session".to_string()
+        });
 
         Self {
             app_env,
@@ -32,6 +44,9 @@ impl AppConfig {
             database_url,
             log_filter,
             token_prefix,
+            douyin_app_id,
+            douyin_app_secret,
+            douyin_code2session_url,
         }
     }
 

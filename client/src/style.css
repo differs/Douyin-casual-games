@@ -78,6 +78,22 @@ h1 {
   line-height: 1.6;
 }
 
+.feature-strip {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.feature-strip span {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: #dff4ff;
+  background: rgba(144, 224, 239, 0.15);
+  border: 1px solid rgba(144, 224, 239, 0.15);
+}
+
 .stats-grid {
   margin-top: 24px;
   display: grid;

@@ -16,9 +16,14 @@ if (!app) {
 app.innerHTML = `
   <div class="shell">
     <section class="panel home-panel" id="home-panel">
-      <div class="eyebrow">抖音极简吞噬原型</div>
+      <div class="eyebrow">抖音小游戏首版原型</div>
       <h1>深海吞噬进化</h1>
-      <p class="subtitle">从鱼苗开始，大吃小，越吞越大。</p>
+      <p class="subtitle">10 秒上手，20 秒进化，1 局就想再来一局。</p>
+      <div class="feature-strip">
+        <span>单手滑动</span>
+        <span>大吃小</span>
+        <span>广告复活</span>
+      </div>
       <div class="stats-grid">
         <div class="stat-card">
           <span class="stat-label">最高分</span>
@@ -30,7 +35,7 @@ app.innerHTML = `
         </div>
       </div>
       <div class="home-actions">
-        <button class="primary-button" id="start-button">开始游戏</button>
+        <button class="primary-button" id="start-button">开始吞噬</button>
         <label class="audio-toggle">
           <input type="checkbox" id="audio-toggle" />
           <span>音效开关</span>
@@ -63,9 +68,9 @@ app.innerHTML = `
     <section class="overlay hidden" id="revive-overlay">
       <div class="dialog">
         <h2>被大鱼吞掉了</h2>
-        <p>看一次广告模拟，原地复活继续冲分。</p>
+        <p>看一次激励广告，原地复活，继续冲更高阶段。</p>
         <div class="dialog-actions">
-          <button class="primary-button" id="revive-button">复活继续</button>
+          <button class="primary-button" id="revive-button">看广告复活</button>
           <button class="secondary-button" id="skip-revive-button">直接结算</button>
         </div>
       </div>
@@ -81,7 +86,7 @@ app.innerHTML = `
           <div><span>金币奖励</span><strong id="result-coin">0</strong></div>
         </div>
         <div class="dialog-actions">
-          <button class="primary-button" id="double-reward-button">广告双倍奖励</button>
+          <button class="primary-button" id="double-reward-button">看广告拿双倍金币</button>
           <button class="secondary-button" id="restart-button">再来一局</button>
         </div>
       </div>

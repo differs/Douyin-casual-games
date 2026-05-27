@@ -9,6 +9,7 @@ use serde::Serialize;
 pub enum AppError {
     InvalidToken,
     InvalidParams(&'static str),
+    LoginFailed(&'static str),
     UserNotFound,
     ScoreInvalid,
     RewardAlreadyClaimed,
@@ -38,6 +39,14 @@ impl IntoResponse for AppError {
                 StatusCode::BAD_REQUEST,
                 Json(ErrorBody {
                     code: 1003,
+                    message: message.to_string(),
+                }),
+            )
+                .into_response(),
+            Self::LoginFailed(message) => (
+                StatusCode::BAD_REQUEST,
+                Json(ErrorBody {
+                    code: 1002,
                     message: message.to_string(),
                 }),
             )
