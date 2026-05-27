@@ -1,4 +1,5 @@
 import { API_BASE, EVENT_NAMES } from "../config";
+import { getLoginCode } from "../platform/runtime";
 import type { GameResult, Session, UserArchive, UserProfile } from "../types";
 import { getAnonymousId, getToken, setToken } from "./storage";
 
@@ -127,10 +128,11 @@ async function ensureLogin(): Promise<string> {
   }
 
   const anonymousId = getAnonymousId();
+  const code = await getLoginCode(`dev_${anonymousId}`);
   const response = await request<LoginData>("/login", {
     method: "POST",
     body: {
-      code: `dev_${anonymousId}`,
+      code,
       anonymous_id: anonymousId,
     },
   });

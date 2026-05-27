@@ -3,6 +3,7 @@ import "./style.css";
 import { DeepSeaGame } from "./game/game";
 import { bootstrapSession, claimDoubleReward, claimRevive, reportSimpleEvent, saveArchive, submitScore } from "./services/api";
 import { EVENT_NAMES } from "./config";
+import { getRuntimeLabel, showRewardedAd } from "./platform/runtime";
 import type { GameResult, Session } from "./types";
 import { getAudioEnabled, setAudioEnabled } from "./services/storage";
 
@@ -148,6 +149,10 @@ doubleRewardButton.addEventListener("click", async () => {
 
   doubleRewardButton.disabled = true;
   try {
+    const watched = await showRewardedAd("double_reward");
+    if (!watched) {
+      return;
+    }
     const reward = await claimDoubleReward(latestCoinReward);
     rewardDoubled = true;
     session.archive.coin = reward.coin;
@@ -165,6 +170,10 @@ reviveButton.addEventListener("click", async () => {
   }
   reviveButton.disabled = true;
   try {
+    const watched = await showRewardedAd("revive");
+    if (!watched) {
+      return;
+    }
     await claimRevive();
     hide(reviveOverlay);
     game.revive();
@@ -187,7 +196,7 @@ async function initialize(): Promise<void> {
   try {
     session = await bootstrapSession();
     session.archive.audio_enabled = getAudioEnabled();
-    statusText.textContent = `欢迎回来，${session.profile.nickname}`;
+    statusText.textContent = `欢迎回来，${session.profile.nickname} · ${getRuntimeLabel()}`;
     bestScore.textContent = String(session.archive.best_score);
     coinCount.textContent = String(session.archive.coin);
     await saveArchive({ audio_enabled: session.archive.audio_enabled });
