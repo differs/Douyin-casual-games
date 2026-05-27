@@ -8,6 +8,12 @@ npm install
 npm run dev
 ```
 
+For local web debug, keep:
+
+```bash
+VITE_API_BASE=http://127.0.0.1:8080/api
+```
+
 ## Build
 
 ```bash
@@ -30,6 +36,13 @@ dist-minigame-native/
 ```
 
 Open that directory in Douyin Mini Game DevTools.
+
+## Recommended Validation Order
+
+1. Web prototype + local server
+2. Native minigame export in DevTools
+3. Real `tt.login`
+4. Real rewarded ad callbacks
 
 Important generated files:
 

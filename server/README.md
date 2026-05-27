@@ -37,8 +37,7 @@ DOUYIN_APP_SECRET=your_microapp_secret
 Apply the current migration:
 
 ```bash
-psql postgres://postgres:postgres@127.0.0.1:5432/dy_mini -f migrations/0001_init_users_and_archives.sql
-psql postgres://postgres:postgres@127.0.0.1:5432/dy_mini -f migrations/0002_add_score_reward_and_event_tables.sql
+./scripts/apply_migrations.sh
 ```
 
 Then start the server:
@@ -64,3 +63,11 @@ POST /api/event/report
 
 - Development fallback: codes beginning with `dev_` use mock openid mapping
 - Douyin Mini Game runtime: frontend uses `tt.login`, backend exchanges code through `code2session`
+
+## Local Frontend Debug
+
+The server now allows permissive CORS for local prototype debugging, so the Vite frontend can call:
+
+```text
+http://127.0.0.1:8080/api
+```
