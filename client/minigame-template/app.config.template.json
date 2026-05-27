@@ -1,0 +1,5 @@
+{
+  "appId": "your_microapp_appid",
+  "apiBase": "https://your-api-domain.example.com/api",
+  "rewardedAdUnitId": "your_rewarded_ad_unit_id"
+}

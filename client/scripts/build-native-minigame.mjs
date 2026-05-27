@@ -41,6 +41,35 @@ await fs.writeFile(
   )}\n`,
 );
 
+await fs.writeFile(
+  path.join(outputDir, "release.config.json"),
+  `${JSON.stringify(
+    {
+      appId,
+      projectName: "deep-sea-devour",
+      backend: {
+        apiBase,
+      },
+      ads: {
+        rewardedAdUnitId: adUnitId,
+      },
+      review: {
+        gameName: "深海吞噬进化",
+        category: "休闲益智",
+        orientation: "portrait",
+        testAccount: "",
+        notes: [
+          "首版仅包含首页、单局吞噬、一次复活、结算页。",
+          "当前版本无支付，仅接激励广告。",
+          "首次失败后可通过激励广告复活一次。",
+        ],
+      },
+    },
+    null,
+    2,
+  )}\n`,
+);
+
 async function copyDir(from, to) {
   const entries = await fs.readdir(from, { withFileTypes: true });
   for (const entry of entries) {

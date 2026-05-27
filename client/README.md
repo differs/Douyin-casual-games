@@ -31,6 +31,12 @@ dist-minigame-native/
 
 Open that directory in Douyin Mini Game DevTools.
 
+Important generated files:
+
+- `app.config.json`
+- `project.config.json`
+- `release.config.json`
+
 ## Current Scope
 
 - Home
@@ -60,3 +66,12 @@ VITE_DOUYIN_APP_ID=your_microapp_appid
 - `dist-minigame-native/`: native Douyin Mini Game prototype template
 
 Use `dist-minigame-native/` for the next validation step in DevTools.
+
+## Release Prep
+
+Templates and docs:
+
+- `minigame-template/app.config.template.json`
+- `minigame-template/release.config.template.json`
+- `minigame-template/review-checklist.md`
+- `docs/douyin-minigame-devtools-guide.md`
