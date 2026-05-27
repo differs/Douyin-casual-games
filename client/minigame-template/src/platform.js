@@ -1,5 +1,13 @@
 const config = require("./config");
 
+function validateConfig() {
+  return {
+    hasAppId: Boolean(config.appId && config.appId !== "touristappid"),
+    hasApiBase: Boolean(config.apiBase && !config.apiBase.includes("127.0.0.1")),
+    hasRewardedAdUnitId: Boolean(config.rewardedAdUnitId),
+  };
+}
+
 function login() {
   return new Promise((resolve, reject) => {
     tt.login({
@@ -57,6 +65,7 @@ function createRewardedAd() {
 }
 
 module.exports = {
+  validateConfig,
   login,
   request,
   createRewardedAd,

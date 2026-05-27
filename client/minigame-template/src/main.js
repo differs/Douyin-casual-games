@@ -4,6 +4,7 @@ const platform = require("./platform");
 const systemInfo = tt.getSystemInfoSync();
 const canvas = tt.createCanvas();
 const ctx = canvas.getContext("2d");
+const configStatus = platform.validateConfig();
 
 canvas.width = systemInfo.windowWidth;
 canvas.height = systemInfo.windowHeight;
@@ -13,6 +14,7 @@ const state = {
   bestScore: 0,
   coin: 0,
   runtimeLabel: "抖音小游戏",
+  configWarning: "",
   screen: "loading",
   pointer: null,
   reviveUsed: 0,
@@ -35,6 +37,11 @@ boot().catch((error) => {
 
 function boot() {
   bindTouches();
+  if (!configStatus.hasAppId || !configStatus.hasApiBase) {
+    state.configWarning = "检测到仍在使用示例配置，请先替换 appId 和 apiBase。";
+  } else if (!configStatus.hasRewardedAdUnitId) {
+    state.configWarning = "未配置激励广告位，广告流程将回退模拟通过。";
+  }
   render();
   return loginAndLoad().then(() => {
     state.screen = "home";
@@ -77,10 +84,14 @@ function handleTap(x, y) {
     if (hitButton(x, y, 34, canvas.height - 180, canvas.width - 68, 54)) {
       showRewardedAd("revive").then((success) => {
         if (success) {
-          claimRevive().then(() => {
-            state.screen = "playing";
-            revivePlayer();
-          });
+          claimRevive()
+            .then(() => {
+              state.screen = "playing";
+              revivePlayer();
+            })
+            .catch(() => {
+              showToast("复活奖励发放失败");
+            });
         }
       });
       return;
@@ -99,7 +110,9 @@ function handleTap(x, y) {
       }
       showRewardedAd("double_reward").then((success) => {
         if (success) {
-          claimDoubleReward();
+          claimDoubleReward().catch(() => {
+            showToast("双倍奖励发放失败");
+          });
         }
       });
       return;
@@ -136,6 +149,9 @@ function loginAndLoad() {
       state.bestScore = archive.best_score;
       state.coin = archive.coin;
       state.runtimeLabel = `抖音小游戏 · ${profile.nickname}`;
+      if (state.configWarning) {
+        showToast(state.configWarning);
+      }
     });
 }
 
@@ -308,6 +324,7 @@ function finishGame() {
     })
     .catch(() => {
       state.latestCoinReward = 0;
+      showToast("分数提交失败");
     });
 }
 
@@ -416,6 +433,11 @@ function drawHome() {
   ctx.fillStyle = "#8ecae6";
   ctx.font = "14px sans-serif";
   ctx.fillText(state.runtimeLabel, 42, canvas.height - 38);
+  if (state.configWarning) {
+    ctx.fillStyle = "#ffd6a5";
+    ctx.font = "13px sans-serif";
+    wrapText(state.configWarning, 42, canvas.height - 86, canvas.width - 84, 20);
+  }
 }
 
 function drawWorld() {

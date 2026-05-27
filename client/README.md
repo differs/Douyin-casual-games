@@ -75,3 +75,4 @@ Templates and docs:
 - `minigame-template/release.config.template.json`
 - `minigame-template/review-checklist.md`
 - `docs/douyin-minigame-devtools-guide.md`
+- `docs/native-minigame-preflight.md`
